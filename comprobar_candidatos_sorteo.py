@@ -1,14 +1,12 @@
 #!/bin/python
-## Actividad 1
+## Actividad 3
 
 from hashlib import sha256
 import secrets
-
 import sys
-
 from os import listdir
-
 from os.path import isfile, join
+import random
 
 
 if len(sys.argv) < 3 :
@@ -27,11 +25,9 @@ m = sha256()
 m.update(buffer1)
 hash_archivo1 = m.hexdigest()
 
-fichero_con_ceros_maximos = ""
-hash_fichero_ceros_maximo = ""
-max_ceros = 0
 # Obtenemos la lista de ficheros del directorio 
 archivos_directorio = []
+candidatos_a_sorteo=[]
 
 for f in listdir(sys.argv[2]): 
     if isfile(join(sys.argv[2],f)) :
@@ -77,17 +73,28 @@ for fichero in archivos_directorio:
     if cantidad_ceros <= 0:
         print(fichero + ": [FAIL] -> El hash del fichero no comienza por una lista de 0s")
         continue
-    elif(cantidad_ceros > max_ceros):
-        max_ceros = cantidad_ceros
-        fichero_con_ceros_maximos = fichero
-        hash_fichero_ceros_maximo= m.hexdigest()
     print(fichero + ": [OK]   -> Cantidad 0s = " + str(cantidad_ceros))
 
+    #Añadimos el fichero a los candidatos
+    candidatos_a_sorteo.append(fichero)
 
 
-print("Fichero con cadena de 0s mas larga: " + fichero_con_ceros_maximos)
-print("Hash del fichero con ceros maximo:" + hash_fichero_ceros_maximo)
-print("Cantidad de 0s: " + str(max_ceros))
+
+
+#Seleccionamos entre los candidatos de forma aleatoria
+
+ganador = random.choice(candidatos_a_sorteo)
+
+with open(ganador,"rb") as f:
+        buffer2 =f.read()
+
+
+m = sha256()
+m.update(buffer2)
+
+print("Ganador de sorteo: " + ganador)
+print("Hash del fichero ganador:" + m.hexdigest())
+print("Cantidad de 0s: " + str(len(m.hexdigest()) - len(m.hexdigest().lstrip('0'))))
 
 
 
